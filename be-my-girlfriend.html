@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💍 มีเรื่องอยากถาม...</title>
+<link href="https://fonts.googleapis.com/css2?family=Itim&family=Mitr:wght@300;400;500&family=Cormorant+Garamond:ital,wght@1,300;1,400&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'Mitr',sans-serif;background:#0d0008;color:#fff;cursor:none;user-select:none}
+
+#cur{position:fixed;z-index:9999;pointer-events:none;width:12px;height:12px;border-radius:50%;
+  background:radial-gradient(circle,#ff6eb4,#e8189a);transform:translate(-50%,-50%);
+  box-shadow:0 0 20px rgba(255,110,180,.8),0 0 40px rgba(232,24,154,.4)}
+#cur2{position:fixed;z-index:9998;pointer-events:none;width:40px;height:40px;border-radius:50%;
+  border:1px solid rgba(255,110,180,.3);transform:translate(-50%,-50%);transition:left .1s ease,top .1s ease}
+
+#bgc{position:fixed;inset:0;z-index:0}
+
+#veil{position:fixed;inset:0;z-index:8000;background:#0d0008;
+  display:flex;align-items:center;justify-content:center;transition:opacity 1.5s,visibility 1.5s}
+#veil.gone{opacity:0;visibility:hidden;pointer-events:none}
+.veil-heart{font-size:4rem;animation:vp 1s ease-in-out infinite;filter:drop-shadow(0 0 30px rgba(255,110,180,.8))}
+@keyframes vp{0%,100%{transform:scale(1)}50%{transform:scale(1.25)}}
+
+.ring-deco{position:fixed;border-radius:50%;pointer-events:none;
+  border:1px solid rgba(255,110,180,.07);top:50%;left:50%;
+  animation:ringPulse var(--d) ease-in-out infinite var(--dl)}
+@keyframes ringPulse{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.3}50%{transform:translate(-50%,-50%) scale(1.06);opacity:.12}}
+
+.fdeco{position:fixed;pointer-events:none;z-index:5;font-size:var(--fs,1.5rem);
+  animation:floatY var(--d) ease-in-out infinite var(--dl);opacity:.55}
+@keyframes floatY{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-16px) rotate(7deg)}}
+
+.scene{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;padding:20px 6vw}
+
+#phase1{display:flex;flex-direction:column;align-items:center}
+#phase2{display:none;flex-direction:column;align-items:center}
+
+.eyebrow-q{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;
+  font-size:clamp(.78rem,1.3vw,.95rem);color:rgba(255,150,200,.45);
+  letter-spacing:.24em;text-transform:uppercase;margin-bottom:clamp(18px,3.5vh,32px);
+  opacity:0;animation:fadeUp .7s .3s both}
+
+/* BOW canvas */
+#bowCanvas{
+  width:clamp(90px,13vw,140px);height:clamp(90px,13vw,140px);
+  margin-bottom:clamp(12px,2.5vh,22px);
+  animation:hbeat 2s ease-in-out infinite, fadeUp .7s .4s both;
+  opacity:0;
+  filter:drop-shadow(0 0 20px rgba(255,160,190,.7));
+}
+@keyframes hbeat{0%,100%{transform:scale(1)}15%{transform:scale(1.22)}30%{transform:scale(1)}45%{transform:scale(1.14)}}
+
+/* BIG TEXT — Itim font */
+.q-line{
+  font-family:'Itim',cursive;font-weight:400;
+  font-size:clamp(3.5rem,10vw,9rem);
+  line-height:.92;letter-spacing:-.01em;
+  background:linear-gradient(135deg,#ffb3d9 0%,#ff6eb4 25%,#e8189a 55%,#c2006e 100%);
+  background-size:200% 200%;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:gShift 4s ease infinite, fadeUp .8s var(--qd,.5s) both;opacity:0;
+  position:relative;display:block;
+}
+@keyframes gShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.q-line::after{
+  content:attr(data-text);position:absolute;inset:0;
+  -webkit-text-fill-color:transparent;
+  background:linear-gradient(135deg,#ff4da6,#e8189a);
+  -webkit-background-clip:text;background-clip:text;
+  filter:blur(22px);opacity:.35;
+  animation:gPulse 3s ease-in-out infinite;
+}
+@keyframes gPulse{0%,100%{opacity:.25}50%{opacity:.55}}
+
+.sub-q{font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:clamp(1rem,2vw,1.5rem);color:rgba(255,180,210,.65);
+  margin:clamp(12px,2.5vh,20px) 0 clamp(24px,5vh,44px);letter-spacing:.05em;
+  opacity:0;animation:fadeUp .7s .85s both}
+
+.btn-row{display:flex;gap:clamp(12px,2.5vw,20px);align-items:center;
+  flex-wrap:wrap;justify-content:center;opacity:0;animation:fadeUp .7s 1.05s both}
+
+.btn-yes{
+  position:relative;overflow:hidden;
+  background:linear-gradient(135deg,#ff6eb4 0%,#e8189a 50%,#a8005c 100%);
+  border:none;border-radius:60px;
+  padding:clamp(16px,2.5vh,22px) clamp(42px,7vw,80px);
+  font-family:'Itim',cursive;font-weight:400;
+  font-size:clamp(1.2rem,2.2vw,1.6rem);
+  color:#fff;letter-spacing:.05em;cursor:pointer;
+  box-shadow:0 0 40px rgba(255,77,166,.55),0 0 80px rgba(232,24,154,.28),0 8px 30px rgba(232,24,154,.4);
+  transition:transform .25s,box-shadow .25s;
+}
+.btn-yes::before{content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.18),transparent 60%);border-radius:inherit}
+.btn-yes::after{content:'';position:absolute;top:0;left:-100%;width:55%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);transition:left .55s}
+.btn-yes:hover::after{left:140%}
+.btn-yes:hover{transform:scale(1.06) translateY(-4px);
+  box-shadow:0 0 70px rgba(255,77,166,.75),0 0 130px rgba(232,24,154,.4),0 14px 44px rgba(232,24,154,.55)}
+.btn-yes:active{transform:scale(.97)}
+
+.btn-no{background:rgba(255,255,255,.05);backdrop-filter:blur(14px);
+  border:1px solid rgba(255,110,180,.18);border-radius:60px;
+  padding:clamp(14px,2.2vh,18px) clamp(28px,4vw,48px);
+  font-family:'Mitr',sans-serif;font-weight:300;
+  font-size:clamp(.88rem,1.4vw,1.05rem);
+  color:rgba(255,180,210,.55);cursor:pointer;transition:all .3s}
+.btn-no:hover{border-color:rgba(255,110,180,.38);color:rgba(255,155,200,.9);transform:translateY(-2px)}
+
+/* SUCCESS */
+.success-emoji{font-size:clamp(4.5rem,11vw,8rem);
+  animation:popIn .65s cubic-bezier(.175,.885,.32,1.275) both;
+  filter:drop-shadow(0 0 32px rgba(255,100,180,.65));
+  margin-bottom:clamp(14px,3vh,26px)}
+@keyframes popIn{0%{transform:scale(0) rotate(-25deg);opacity:0}100%{transform:scale(1) rotate(0);opacity:1}}
+
+.success-title{font-family:'Itim',cursive;font-weight:400;
+  font-size:clamp(2.8rem,8vw,6.5rem);line-height:.92;letter-spacing:-.01em;
+  background:linear-gradient(135deg,#ffe0f0,#ff6eb4,#e8189a);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:clamp(12px,2.5vh,20px);
+  animation:fadeUp .65s .15s both;opacity:0}
+
+.success-sub{font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:clamp(1rem,1.9vw,1.4rem);color:rgba(255,180,210,.72);
+  line-height:1.75;max-width:440px;
+  animation:fadeUp .65s .3s both;opacity:0;
+  margin-bottom:clamp(18px,3.5vh,32px)}
+
+.date-badge{background:rgba(255,77,166,.1);border:1px solid rgba(255,77,166,.22);
+  border-radius:50px;padding:10px 26px;
+  font-size:.8rem;color:rgba(255,180,210,.55);letter-spacing:.1em;
+  animation:fadeUp .65s .45s both;opacity:0}
+
+.burst-heart{position:fixed;pointer-events:none;z-index:600;font-size:var(--fs);
+  animation:burstFly var(--d) ease forwards var(--dl)}
+@keyframes burstFly{
+  0%{transform:translate(-50%,-50%) scale(0);opacity:1}
+  100%{transform:translate(calc(-50% + var(--tx)),calc(-50% + var(--ty))) scale(1.6);opacity:0}
+}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+
+@media(max-width:600px){
+  .btn-row{flex-direction:column;gap:12px;width:100%}
+  .btn-yes,.btn-no{width:min(280px,85vw)}
+  .q-line{font-size:clamp(3rem,14vw,5.5rem)}
+}
+</style>
+</head>
+<body>
+
+<div id="cur"></div><div id="cur2"></div>
+<div id="veil"><div class="veil-heart">💗</div></div>
+<canvas id="bgc"></canvas>
+<canvas id="confettiC" style="position:fixed;inset:0;z-index:500;pointer-events:none"></canvas>
+
+<div class="ring-deco" style="width:450px;height:450px;--d:6s;--dl:0s"></div>
+<div class="ring-deco" style="width:700px;height:700px;--d:9s;--dl:1.2s"></div>
+<div class="ring-deco" style="width:950px;height:950px;--d:13s;--dl:2.4s"></div>
+
+<span class="fdeco" style="top:7%;left:5%;--d:4s;--dl:0s;--fs:1.8rem">🌸</span>
+<span class="fdeco" style="top:9%;right:6%;--d:5.5s;--dl:.7s;--fs:1.4rem">💮</span>
+<span class="fdeco" style="bottom:11%;left:4%;--d:6s;--dl:1.3s;--fs:1.7rem">🌷</span>
+<span class="fdeco" style="bottom:9%;right:5%;--d:4.5s;--dl:.3s;--fs:1.4rem">✨</span>
+<span class="fdeco" style="top:40%;left:1.5%;--d:7s;--dl:2s;--fs:1rem">💕</span>
+<span class="fdeco" style="top:58%;right:1.8%;--d:5s;--dl:1.6s;--fs:1rem">⋆</span>
+
+<div class="scene">
+  <div id="phase1">
+    <div class="eyebrow-q">✦ &nbsp; a question for you &nbsp; ✦</div>
+    <canvas id="bowCanvas"></canvas>
+    <span class="q-line" data-text="จะเป็น" style="--qd:.5s">จะเป็น</span>
+    <span class="q-line" data-text="แฟนฉัน" style="--qd:.68s">แฟนฉัน</span>
+    <span class="q-line" data-text="ได้ไหม?" style="--qd:.86s;font-size:clamp(2.6rem,7vw,6.5rem)">ได้ไหม?</span>
+    <p class="sub-q">ถือว่าเป็นความลับระหว่างเราสองคนก็ได้นะ... 💌</p>
+    <div class="btn-row">
+      <button class="btn-yes" id="btnYes" onclick="sayYes()">💕 &nbsp; ได้เลย!</button>
+      <button class="btn-no" id="btnNo">ขอคิดดูก่อน...</button>
+    </div>
+  </div>
+
+  <div id="phase2">
+    <div class="success-emoji" id="sEmoji">🎉</div>
+    <div class="success-title">ยินดีมากเลย!</div>
+    <p class="success-sub">
+      ขอบคุณที่ยอมรับนะ 🥰<br>
+      ตั้งแต่นี้จะดูแลให้ดีที่สุดเลย<br>
+      <em style="color:rgba(255,160,210,.75)">ยินดีที่ได้รู้จักในฐานะแฟน 💕</em>
+    </p>
+    <div class="date-badge" id="dateLabel">💍 วันที่เราเริ่มต้น: —</div>
+  </div>
+</div>
+
+<script>
+const c1=document.getElementById('cur'),c2=document.getElementById('cur2');
+document.addEventListener('mousemove',e=>{c1.style.left=e.clientX+'px';c1.style.top=e.clientY+'px';setTimeout(()=>{c2.style.left=e.clientX+'px';c2.style.top=e.clientY+'px'},65)});
+window.addEventListener('load',()=>setTimeout(()=>document.getElementById('veil').classList.add('gone'),900));
+
+/* bg */
+const cv=document.getElementById('bgc'),cx=cv.getContext('2d');
+function rsz(){cv.width=innerWidth;cv.height=innerHeight}rsz();window.addEventListener('resize',rsz);
+const orbs=[
+  {x:.15,y:.2, r:.6, c:'rgba(180,0,80,.3)',  a:0,  s:.0005},
+  {x:.85,y:.75,r:.55,c:'rgba(120,0,60,.24)', a:2.5,s:.0007},
+  {x:.5, y:.5, r:.7, c:'rgba(60,0,30,.38)',  a:4.2,s:.0004},
+  {x:.3, y:.8, r:.4, c:'rgba(200,0,100,.16)',a:1,  s:.0008},
+  {x:.78,y:.18,r:.45,c:'rgba(150,0,70,.2)',  a:3.5,s:.0006},
+];
+function drawBg(){
+  cx.clearRect(0,0,cv.width,cv.height);
+  const bg=cx.createRadialGradient(cv.width*.5,cv.height*.5,0,cv.width*.5,cv.height*.5,cv.width*.85);
+  bg.addColorStop(0,'#1e0016');bg.addColorStop(.5,'#0d0008');bg.addColorStop(1,'#060004');
+  cx.fillStyle=bg;cx.fillRect(0,0,cv.width,cv.height);
+  orbs.forEach(o=>{
+    o.a+=o.s;
+    const ox=(o.x+Math.sin(o.a)*.08)*cv.width;
+    const oy=(o.y+Math.cos(o.a*.7)*.1)*cv.height;
+    const r=o.r*Math.max(cv.width,cv.height);
+    const g=cx.createRadialGradient(ox,oy,0,ox,oy,r);
+    g.addColorStop(0,o.c);g.addColorStop(1,'transparent');
+    cx.fillStyle=g;cx.beginPath();cx.arc(ox,oy,r,0,Math.PI*2);cx.fill();
+  });
+  requestAnimationFrame(drawBg);
+}
+drawBg();
+
+/* BOW — draw on canvas, remove black background */
+const bowImg=new Image();
+bowImg.onload=function(){
+  const bc=document.getElementById('bowCanvas');
+  const sz=Math.round(window.innerWidth<600?110:130);
+  bc.width=sz*2;bc.height=sz*2;
+  bc.style.width=sz+'px';bc.style.height=sz+'px';
+  const bx=bc.getContext('2d');
+  bx.drawImage(bowImg,0,0,bc.width,bc.height);
+  const id=bx.getImageData(0,0,bc.width,bc.height);
+  const d=id.data;
+  for(let i=0;i<d.length;i+=4){
+    const r=d[i],g=d[i+1],b=d[i+2];
+    const bright=(r+g+b)/3;
+    if(bright<55){d[i+3]=0}
+    else if(bright<110){d[i+3]=Math.round(((bright-55)/55)*255)}
+  }
+  bx.putImageData(id,0,0);
+};
+bowImg.src='data:image/png;base64,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';
+
+/* heart rain */
+const rl=document.createElement('div');
+rl.style.cssText='position:fixed;inset:0;z-index:2;pointer-events:none;overflow:hidden';
+document.body.appendChild(rl);
+const rCSS=document.createElement('style');
+rCSS.textContent='.rh{position:absolute;top:-40px;animation:hf linear infinite;opacity:0}@keyframes hf{0%{transform:translateY(0)rotate(0)scale(var(--s));opacity:0}7%{opacity:var(--o)}90%{opacity:var(--o)}100%{transform:translateY(112vh)rotate(var(--r))scale(var(--s));opacity:0}}';
+document.head.appendChild(rCSS);
+const pks=['#ff9ecd','#ff6eb4','#ff4da6','#ffc2e0','#ffadd6'];
+function mkH(sz,col){const s=document.createElementNS('http://www.w3.org/2000/svg','svg');s.setAttribute('width',sz);s.setAttribute('height',sz);s.setAttribute('viewBox','0 0 24 24');s.setAttribute('fill',col);const p=document.createElementNS('http://www.w3.org/2000/svg','path');p.setAttribute('d','M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z');s.appendChild(p);return s}
+function spawnH(){const h=document.createElement('div');h.className='rh';const sz=8+Math.random()*14;h.appendChild(mkH(sz,pks[Math.floor(Math.random()*pks.length)]));h.style.left=Math.random()*100+'%';h.style.setProperty('--o',.15+Math.random()*.42);h.style.setProperty('--s',.5+Math.random()*.9);h.style.setProperty('--r',(160+Math.random()*380)+'deg');const d=5+Math.random()*9;h.style.animationDuration=d+'s';h.style.animationDelay=Math.random()*.5+'s';rl.appendChild(h);setTimeout(()=>h.remove(),(d+2)*1000)}
+setInterval(spawnH,300);for(let i=0;i<22;i++)setTimeout(spawnH,i*55);
+
+/* confetti */
+const cc=document.getElementById('confettiC'),ccx=cc.getContext('2d');
+cc.width=innerWidth;cc.height=innerHeight;
+window.addEventListener('resize',()=>{cc.width=innerWidth;cc.height=innerHeight});
+let pieces=[];
+function launchConfetti(many=80){const cols=['#ff6eb4','#ffcce8','#e8189a','#ffd6ec','#ff4da6','#fff','#ffadd6','#ff9ecd'];const ems=['💕','💖','🌸','⭐','✨','💝','🌷','💗','🎀'];for(let i=0;i<many;i++){pieces.push({x:Math.random()*cc.width,y:-20,vx:(Math.random()-.5)*10,vy:2+Math.random()*6,rot:Math.random()*360,rotV:(Math.random()-.5)*14,size:5+Math.random()*10,color:cols[Math.floor(Math.random()*cols.length)],emoji:Math.random()>.5?ems[Math.floor(Math.random()*ems.length)]:null,gravity:.1+Math.random()*.1,opacity:1,shape:Math.floor(Math.random()*2)})}}
+function drawConfetti(){ccx.clearRect(0,0,cc.width,cc.height);pieces=pieces.filter(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=p.gravity;p.rot+=p.rotV;p.vx*=.99;if(p.y>cc.height+30)return false;ccx.save();ccx.globalAlpha=p.opacity;ccx.translate(p.x,p.y);ccx.rotate(p.rot*Math.PI/180);if(p.emoji){ccx.font=(p.size*2)+'px serif';ccx.textAlign='center';ccx.textBaseline='middle';ccx.fillText(p.emoji,0,0)}else if(p.shape===1){ccx.fillStyle=p.color;ccx.beginPath();ccx.arc(0,0,p.size/2,0,Math.PI*2);ccx.fill()}else{ccx.fillStyle=p.color;ccx.fillRect(-p.size/2,-p.size/4,p.size,p.size/2)}ccx.restore();return true});requestAnimationFrame(drawConfetti)}
+drawConfetti();
+
+function burstHearts(){const ems=['💖','💕','🌸','💝','✨','🌷'];for(let i=0;i<22;i++){const el=document.createElement('div');el.className='burst-heart';const ang=Math.random()*Math.PI*2;const dist=100+Math.random()*300;el.style.cssText=`left:50%;top:50%;--fs:${1+Math.random()*.8}rem;--tx:${Math.cos(ang)*dist}px;--ty:${Math.sin(ang)*dist}px;--d:${.6+Math.random()*.6}s;--dl:${Math.random()*.3}s`;el.textContent=ems[Math.floor(Math.random()*ems.length)];document.body.appendChild(el);setTimeout(()=>el.remove(),1200)}}
+
+const btnNo=document.getElementById('btnNo');
+let noCount=0;
+const noMsgs=['ขอคิดดูก่อน...','อย่าเลยนะ 🥺','คิดดีๆ นะ~','แน่ใจเหรอ? 😢','กดอีกฝั่งสิ~ 💕','ไม่ได้นะ! 😤','เลือกตกลงเถอะ 💖','หนีไม่ได้นะ 😏'];
+function runAway(){
+  noCount++;
+  btnNo.textContent=noMsgs[Math.min(noCount-1,noMsgs.length-1)];
+  if(noCount>=2){const bw=btnNo.offsetWidth||140,bh=btnNo.offsetHeight||50;const x=Math.random()*(innerWidth-bw-40)+20;const y=Math.random()*(innerHeight-bh-40)+20;btnNo.style.cssText=`position:fixed;left:${x}px;top:${y}px;z-index:100;transition:left .22s ease,top .22s ease;background:rgba(255,255,255,.05);backdrop-filter:blur(14px);border:1px solid rgba(255,110,180,.18);border-radius:60px;padding:14px 32px;font-family:'Mitr',sans-serif;font-weight:300;font-size:clamp(.88rem,1.4vw,1.05rem);color:rgba(255,180,210,.55);cursor:pointer`}
+  if(noCount===5) sendDiscord('❌ ยังไม่ตอบรับ', `กดหนีปุ่มไปแล้ว ${noCount} ครั้ง... 😔`);
+}
+btnNo.addEventListener('mouseenter',runAway);
+btnNo.addEventListener('touchstart',e=>{runAway();e.preventDefault();},{passive:false});
+
+/* ══════════════════════════════
+   DISCORD WEBHOOK
+   👉 ใส่ Webhook URL ของคุณตรงนี้
+══════════════════════════════ */
+const WEBHOOK_URL = 'https://ptb.discord.com/api/webhooks/1484571141392564234/hdRXOnwdKJooSQZijpZ7bjXWtwQMG6SNlaO73nm8ejjzS5t3iHhuvAMgUisnwj8eDbvF';
+
+async function sendDiscord(answer, detail){
+  if(!WEBHOOK_URL || WEBHOOK_URL.startsWith('ใส่')) return;
+  const now = new Date().toLocaleString('th-TH',{
+    year:'numeric',month:'long',day:'numeric',
+    hour:'2-digit',minute:'2-digit'
+  });
+  const isYes = answer.includes('✅');
+  try {
+    await fetch(WEBHOOK_URL, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        username: '💌 Love Notification',
+        embeds:[{
+          title: answer,
+          description: detail,
+          color: isYes ? 0xff69b4 : 0x9b59b6,
+          fields:[
+            {name:'📅 วันเวลา', value: now, inline:true},
+            {name:'📱 อุปกรณ์', value: /Mobile|Android|iPhone/.test(navigator.userAgent)?'📱 มือถือ':'💻 คอมพิวเตอร์', inline:true}
+          ],
+          footer:{ text:'💕 ส่งจากหน้า Be My Girlfriend' },
+          timestamp: new Date().toISOString()
+        }]
+      })
+    });
+  } catch(e){ console.log('discord err:',e); }
+}
+
+function sayYes(){
+  sendDiscord('✅ ตอบรับแล้ว!', '💖 เธอกด "ได้เลย!" แล้ว! ยินดีด้วยนะ~ 🎉');
+  launchConfetti(100);burstHearts();
+  setTimeout(()=>{
+    document.getElementById('phase1').style.display='none';
+    const p2=document.getElementById('phase2');p2.style.display='flex';
+    const now=new Date();
+    document.getElementById('dateLabel').textContent='💍 วันที่เราเริ่มต้น: '+now.toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'});
+    const ems=['🎉','💖','🥰','💍','🌹','💕'];let ei=0;const eEl=document.getElementById('sEmoji');
+    setInterval(()=>{eEl.textContent=ems[ei%ems.length];eEl.style.animation='none';eEl.offsetHeight;eEl.style.animation='popIn .4s cubic-bezier(.175,.885,.32,1.275) both';ei++;},1100);
+    setTimeout(()=>launchConfetti(60),700);
+    setTimeout(()=>launchConfetti(60),1500);
+    setTimeout(()=>launchConfetti(40),2500);
+  },350);
+}
+</script>
+</body>
+</html>
