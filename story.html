@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💌 ความรู้สึกในใจ</title>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;700;900&family=Sarabun:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;cursor:none;user-select:none;
+  font-family:'Sarabun','Kanit',sans-serif}
+
+/* CURSOR */
+#cd{position:fixed;z-index:9999;pointer-events:none;width:10px;height:10px;
+  border-radius:50%;background:#e84393;transform:translate(-50%,-50%);mix-blend-mode:multiply}
+#cr{position:fixed;z-index:9998;pointer-events:none;width:28px;height:28px;
+  border-radius:50%;border:1.5px solid rgba(232,67,147,.38);
+  transform:translate(-50%,-50%);transition:left .07s,top .07s}
+
+/* VEIL */
+#veil{position:fixed;inset:0;z-index:9000;
+  background:linear-gradient(145deg,#fff0f8,#fce4ec);
+  display:flex;align-items:center;justify-content:center;
+  transition:opacity 1s,visibility 1s}
+#veil.gone{opacity:0;visibility:hidden;pointer-events:none}
+.vh{font-size:3rem;animation:vp .9s ease-in-out infinite}
+@keyframes vp{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
+
+/* BG */
+#bgc{position:fixed;inset:0;z-index:0}
+.grid{position:fixed;inset:0;z-index:1;pointer-events:none;
+  background-image:linear-gradient(rgba(232,67,147,.02) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(232,67,147,.02) 1px,transparent 1px);
+  background-size:48px 48px}
+#rain{position:fixed;inset:0;z-index:2;pointer-events:none;overflow:hidden}
+.rh{position:absolute;top:-40px;animation:fall linear infinite;opacity:0}
+@keyframes fall{0%{transform:translateY(0)rotate(0)scale(var(--s));opacity:0}
+  7%{opacity:var(--o)}90%{opacity:var(--o)}
+  100%{transform:translateY(112vh)rotate(var(--r))scale(var(--s));opacity:0}}
+#stars{position:fixed;inset:0;z-index:3;pointer-events:none}
+.ss{position:absolute;animation:tw var(--d) ease-in-out infinite var(--dl)}
+@keyframes tw{0%,100%{opacity:.04;transform:scale(.7)}50%{opacity:.3;transform:scale(1.15)}}
+
+/* CORNER DECOS */
+.deco{position:fixed;pointer-events:none;z-index:5;font-size:var(--fs,1.6rem);opacity:.6;
+  animation:df var(--d) ease-in-out infinite var(--dl)}
+@keyframes df{0%,100%{transform:translateY(0)rotate(0)}50%{transform:translateY(-10px)rotate(7deg)}}
+
+/* PAGE NUM */
+.pgn{position:fixed;top:22px;right:24px;z-index:20;
+  font-size:.7rem;color:rgba(180,80,150,.4);letter-spacing:.16em;font-family:'Sarabun',sans-serif}
+
+/* NAV DOTS */
+.nav-dots{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);
+  display:flex;gap:8px;z-index:20}
+.ndot{width:8px;height:8px;border-radius:50%;background:rgba(232,67,147,.18);
+  border:none;cursor:pointer;transition:all .3s;padding:0}
+.ndot.on{background:#e84393;box-shadow:0 0 10px rgba(232,67,147,.45);transform:scale(1.3)}
+
+/* NAV ARROWS */
+.nav-arr{position:fixed;top:50%;transform:translateY(-50%);z-index:20;
+  width:46px;height:46px;border-radius:50%;
+  background:rgba(255,255,255,.45);backdrop-filter:blur(14px);
+  border:1px solid rgba(251,182,206,.45);
+  color:rgba(200,80,160,.6);font-size:1.2rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .22s}
+.nav-arr:hover{background:rgba(255,255,255,.85);color:#e84393;transform:translateY(-50%) scale(1.08)}
+.nav-arr.left{left:18px}.nav-arr.right{right:18px}
+.nav-arr.hide{opacity:0;pointer-events:none}
+
+/* ══════════════════════════════
+   SLIDES WRAPPER
+══════════════════════════════ */
+.slides{position:fixed;inset:0;z-index:10}
+.slide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .55s ease,transform .55s ease;
+  transform:translateY(24px)}
+.slide.active{opacity:1;pointer-events:all;transform:translateY(0)}
+.slide.exit-up{opacity:0;transform:translateY(-28px)}
+.slide.exit-down{opacity:0;transform:translateY(28px)}
+
+/* ══════════════════════════════
+   SLIDE 1 — FULL SCREEN POEM
+   Left big word / right stacked lines
+══════════════════════════════ */
+#s0{padding:0 8vw}
+.poem-layout{
+  width:100%;max-width:1000px;
+  display:grid;grid-template-columns:1fr 1fr;
+  align-items:center;gap:6vw}
+
+/* left — giant word */
+.poem-left{position:relative}
+.poem-bg-word{
+  font-family:'Kanit',sans-serif;font-weight:900;
+  font-size:clamp(6rem,16vw,14rem);
+  line-height:.85;letter-spacing:-.04em;
+  color:transparent;
+  -webkit-text-stroke:1.5px rgba(232,67,147,.08);
+  position:absolute;top:50%;left:-4%;
+  transform:translateY(-50%);
+  pointer-events:none;user-select:none;white-space:nowrap}
+.poem-icon{
+  font-size:clamp(3.5rem,7vw,5.5rem);
+  display:block;margin-bottom:clamp(16px,3vh,24px);
+  animation:iconFloat 4s ease-in-out infinite;
+  filter:drop-shadow(0 10px 28px rgba(232,67,147,.22))}
+@keyframes iconFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.poem-label{
+  font-family:'Sarabun',sans-serif;font-weight:300;font-style:italic;
+  font-size:clamp(.75rem,1.1vw,.88rem);color:rgba(180,80,150,.5);
+  letter-spacing:.16em;text-transform:uppercase;margin-bottom:10px}
+.poem-big{
+  font-family:'Kanit',sans-serif;font-weight:900;
+  font-size:clamp(3rem,6vw,5.5rem);
+  line-height:.95;letter-spacing:-.02em;
+  background:linear-gradient(125deg,#e84393 0%,#d946ef 50%,#a855f7 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:12px}
+.poem-dash{width:50px;height:2px;
+  background:linear-gradient(90deg,#e84393,#d946ef);
+  border-radius:2px;margin-bottom:12px}
+.poem-small{
+  font-family:'Sarabun',sans-serif;font-weight:300;font-style:italic;
+  font-size:clamp(.9rem,1.3vw,1.05rem);
+  color:rgba(140,50,110,.55);line-height:1.8}
+
+/* right — lines */
+.poem-right{display:flex;flex-direction:column;gap:clamp(12px,2.5vh,20px);position:relative}
+
+.poem-line{
+  background:rgba(255,255,255,.55);
+  backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
+  border:1px solid rgba(255,210,235,.65);
+  border-radius:20px;
+  padding:clamp(16px,2.5vh,22px) clamp(20px,2.5vw,28px);
+  position:relative;overflow:hidden;
+  transition:transform .25s,box-shadow .25s}
+.poem-line::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.9),transparent)}
+.poem-line:hover{transform:translateX(6px);box-shadow:0 12px 36px rgba(232,67,147,.1)}
+
+.pl-num{
+  font-family:'Kanit',sans-serif;font-weight:900;font-size:.72rem;
+  color:rgba(232,67,147,.3);letter-spacing:.1em;margin-bottom:4px}
+.pl-text{
+  font-size:clamp(.9rem,1.3vw,1.05rem);font-weight:300;
+  color:rgba(80,20,60,.65);line-height:1.6}
+.pl-text b{font-weight:700;background:linear-gradient(125deg,#e84393,#d946ef);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+.poem-cta{
+  margin-top:clamp(14px,2.5vh,20px);
+  display:inline-flex;align-items:center;gap:10px;
+  background:linear-gradient(135deg,#ff5db0,#e8189a);
+  color:#fff;border:none;border-radius:50px;
+  padding:13px 32px;font-family:'Kanit',sans-serif;font-weight:700;
+  font-size:.9rem;letter-spacing:.06em;cursor:pointer;
+  box-shadow:0 6px 28px rgba(232,24,154,.38);
+  transition:transform .2s,box-shadow .2s;position:relative;overflow:hidden}
+.poem-cta::after{content:'';position:absolute;top:0;left:-90%;width:50%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.25),transparent);transition:left .5s}
+.poem-cta:hover::after{left:140%}
+.poem-cta:hover{transform:translateY(-2px);box-shadow:0 12px 36px rgba(232,24,154,.45)}
+
+/* ══════════════════════════════
+   SLIDE 2 — REASON CARDS
+   Bento-style grid
+══════════════════════════════ */
+#s1{padding:0 6vw}
+.bento-layout{width:100%;max-width:900px}
+.bento-top{text-align:center;margin-bottom:clamp(20px,3.5vh,32px)}
+.bento-eyebrow{
+  font-family:'Sarabun',sans-serif;font-weight:300;font-style:italic;
+  font-size:.78rem;color:rgba(180,80,150,.5);letter-spacing:.18em;
+  text-transform:uppercase;margin-bottom:8px}
+.bento-title{
+  font-family:'Kanit',sans-serif;font-weight:900;
+  font-size:clamp(1.8rem,4vw,3rem);letter-spacing:-.01em;
+  background:linear-gradient(125deg,#e84393,#d946ef,#a855f7);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+.bento-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  grid-template-rows:auto auto;
+  gap:12px}
+
+.bento{
+  background:rgba(255,255,255,.6);backdrop-filter:blur(20px);
+  border:1.5px solid rgba(255,210,235,.6);border-radius:22px;
+  padding:clamp(16px,2.5vh,22px) clamp(14px,2vw,20px);
+  position:relative;overflow:hidden;
+  transition:transform .28s,box-shadow .28s}
+.bento::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.9),transparent)}
+.bento:hover{transform:translateY(-5px) scale(1.01);
+  box-shadow:0 20px 50px rgba(232,67,147,.12)}
+
+/* accented large bento */
+.bento.accent{
+  background:linear-gradient(135deg,rgba(255,182,210,.2),rgba(192,132,252,.12));
+  border-color:rgba(232,67,147,.25)}
+
+.bento-emoji{font-size:clamp(1.8rem,3vw,2.4rem);display:block;margin-bottom:10px}
+.bento-name{font-weight:700;font-size:clamp(.85rem,1.2vw,1rem);
+  color:rgba(100,20,80,.8);margin-bottom:5px}
+.bento-desc{font-size:clamp(.72rem,.95vw,.85rem);font-weight:300;
+  color:rgba(140,60,110,.55);line-height:1.55}
+
+.bento-cta-row{text-align:center;margin-top:clamp(16px,3vh,26px)}
+
+/* ══════════════════════════════
+   SLIDE 3 — TIMELINE FULL WIDTH
+══════════════════════════════ */
+#s2{padding:0 6vw}
+.tl-layout{width:100%;max-width:900px}
+.tl-top{text-align:center;margin-bottom:clamp(20px,3.5vh,32px)}
+.tl-eyebrow{font-family:'Sarabun',sans-serif;font-weight:300;font-style:italic;
+  font-size:.78rem;color:rgba(180,80,150,.5);letter-spacing:.18em;
+  text-transform:uppercase;margin-bottom:8px}
+.tl-title{font-family:'Kanit',sans-serif;font-weight:900;
+  font-size:clamp(1.8rem,4vw,3rem);letter-spacing:-.01em;
+  background:linear-gradient(125deg,#c084fc,#e84393,#f472b6);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+/* horizontal timeline */
+.tl-track{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:16px;position:relative;margin-bottom:clamp(16px,3vh,26px)}
+/* connecting line */
+.tl-track::before{content:'';position:absolute;
+  top:28px;left:14%;right:14%;height:2px;
+  background:linear-gradient(90deg,rgba(232,67,147,.15),rgba(192,132,252,.25),rgba(232,67,147,.15))}
+
+.tl-step{display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px}
+.tl-circle{
+  width:56px;height:56px;border-radius:50%;
+  background:linear-gradient(135deg,#fce4ec,#fbb6ce);
+  border:2px solid rgba(255,182,210,.6);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.5rem;
+  box-shadow:0 6px 20px rgba(232,67,147,.18);
+  position:relative;z-index:2;
+  transition:transform .25s,box-shadow .25s}
+.tl-step:hover .tl-circle{transform:scale(1.12);box-shadow:0 10px 30px rgba(232,67,147,.28)}
+.tl-step-body{
+  background:rgba(255,255,255,.58);backdrop-filter:blur(16px);
+  border:1px solid rgba(255,210,235,.5);border-radius:16px;
+  padding:14px 12px;width:100%}
+.tl-step-title{font-weight:700;font-size:clamp(.78rem,1.1vw,.92rem);
+  color:rgba(100,20,80,.8);margin-bottom:4px}
+.tl-step-desc{font-size:clamp(.68rem,.9vw,.8rem);font-weight:300;
+  color:rgba(140,60,110,.55);line-height:1.5}
+
+.tl-cta-row{text-align:center}
+
+/* shared CTA button */
+.s-cta{
+  display:inline-flex;align-items:center;gap:10px;
+  background:linear-gradient(135deg,#ff5db0,#e8189a);
+  color:#fff;border:none;border-radius:50px;
+  padding:13px 34px;font-family:'Kanit',sans-serif;font-weight:700;
+  font-size:.9rem;letter-spacing:.06em;cursor:pointer;
+  box-shadow:0 6px 28px rgba(232,24,154,.38);
+  transition:transform .2s,box-shadow .2s;position:relative;overflow:hidden}
+.s-cta::after{content:'';position:absolute;top:0;left:-90%;width:50%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.25),transparent);transition:left .5s}
+.s-cta:hover::after{left:140%}
+.s-cta:hover{transform:translateY(-2px);box-shadow:0 12px 36px rgba(232,24,154,.45)}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
+/* responsive */
+@media(max-width:750px){
+  #s0{padding:60px 6vw}
+  .poem-layout{grid-template-columns:1fr}
+  .poem-bg-word{display:none}
+  .poem-right{gap:10px}
+  .bento-grid{grid-template-columns:repeat(2,1fr)}
+  .tl-track{grid-template-columns:repeat(2,1fr)}
+  .tl-track::before{display:none}
+  html,body{overflow:auto}.slides{position:relative;height:auto}
+  .slide{position:relative;min-height:100vh}
+}
+</style>
+</head>
+<body>
+
+<div id="cd"></div><div id="cr"></div>
+<div id="veil"><div class="vh">💗</div></div>
+<canvas id="bgc"></canvas>
+<div class="grid"></div>
+<div id="rain"></div>
+<div id="stars"></div>
+
+<span class="deco" style="top:4%;left:3%;--d:4.2s;--dl:0s">🌸</span>
+<span class="deco" style="top:6%;right:4%;--d:5.5s;--dl:.7s;--fs:1.3rem">💮</span>
+<span class="deco" style="bottom:10%;left:3%;--d:6s;--dl:1.3s">🌷</span>
+<span class="deco" style="bottom:8%;right:3.5%;--d:4.8s;--dl:.3s;--fs:1.4rem">✨</span>
+
+<div class="pgn" id="pgn">01 / 03</div>
+<button class="nav-arr left hide" id="arrL" onclick="go(-1)">‹</button>
+<button class="nav-arr right" id="arrR" onclick="go(1)">›</button>
+<div class="nav-dots" id="dots"></div>
+
+<!-- ════════════════════════
+     SLIDES
+════════════════════════ -->
+<div class="slides">
+
+  <!-- SLIDE 1 — POEM -->
+  <div class="slide active" id="s0">
+    <div class="poem-layout">
+
+      <!-- LEFT -->
+      <div class="poem-left">
+        <div class="poem-bg-word">รัก</div>
+        <span class="poem-icon">💌</span>
+        <div class="poem-label">ความรู้สึกในใจ</div>
+        <div class="poem-big">ตั้งแต่<br>วันแรก</div>
+        <div class="poem-dash"></div>
+        <div class="poem-small">
+          มีบางอย่างที่<br>อยากให้เธอรู้...
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="poem-right">
+        <div class="poem-line" style="animation:fadeUp .6s .3s both;opacity:0">
+          <div class="pl-num">01</div>
+          <div class="pl-text">ตั้งแต่วันแรกที่ได้<b>เจอกัน</b><br>หัวใจก็รู้สึกถึงบางอย่าง<b>พิเศษ</b></div>
+        </div>
+        <div class="poem-line" style="animation:fadeUp .6s .45s both;opacity:0">
+          <div class="pl-num">02</div>
+          <div class="pl-text">ทุกครั้งที่ได้คุยกับเธอ<br>โลกทั้งใบก็<b>สว่างขึ้นมา</b> ✨</div>
+        </div>
+        <div class="poem-line" style="animation:fadeUp .6s .6s both;opacity:0">
+          <div class="pl-num">03</div>
+          <div class="pl-text">เธอคือคนที่ทำให้ทุกวัน<br>ของฉันมี<b>ความหมาย</b>...</div>
+        </div>
+        <div style="animation:fadeUp .6s .8s both;opacity:0">
+          <button class="poem-cta" onclick="go(1)">อ่านต่อเลย 💕</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SLIDE 2 — BENTO REASONS -->
+  <div class="slide" id="s1">
+    <div class="bento-layout">
+      <div class="bento-top">
+        <div class="bento-eyebrow">เหตุผลทั้งหมด</div>
+        <div class="bento-title">ทำไมถึงชอบเธอ 💫</div>
+      </div>
+      <div class="bento-grid">
+        <div class="bento accent">
+          <span class="bento-emoji">😊</span>
+          <div class="bento-name">รอยยิ้มของเธอ</div>
+          <div class="bento-desc">ทุกครั้งที่เธอยิ้ม โลกสว่างขึ้นทันที</div>
+        </div>
+        <div class="bento">
+          <span class="bento-emoji">💬</span>
+          <div class="bento-name">คุยกันไม่มีเบื่อ</div>
+          <div class="bento-desc">เรื่องอะไรก็สนุกถ้าได้คุยกับเธอ</div>
+        </div>
+        <div class="bento">
+          <span class="bento-emoji">🌙</span>
+          <div class="bento-name">คิดถึงทุกคืน</div>
+          <div class="bento-desc">ก่อนนอนคนสุดท้ายที่คิดถึงคือเธอ</div>
+        </div>
+        <div class="bento">
+          <span class="bento-emoji">🎯</span>
+          <div class="bento-name">เธอเข้าใจฉัน</div>
+          <div class="bento-desc">ไม่ต้องพูดมากก็รู้ใจกัน</div>
+        </div>
+        <div class="bento accent">
+          <span class="bento-emoji">🌈</span>
+          <div class="bento-name">ทำให้ชีวิตมีสี</div>
+          <div class="bento-desc">เปลี่ยนวันธรรมดาให้พิเศษเสมอ</div>
+        </div>
+        <div class="bento">
+          <span class="bento-emoji">♾️</span>
+          <div class="bento-name">อยากอยู่นานๆ</div>
+          <div class="bento-desc">ไม่ใช่แค่ตอนนี้ แต่ทุกๆ วัน</div>
+        </div>
+      </div>
+      <div class="bento-cta-row" style="margin-top:clamp(14px,2.5vh,22px)">
+        <button class="s-cta" onclick="go(1)">ต่อไปเลย →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3 — HORIZONTAL TIMELINE -->
+  <div class="slide" id="s2">
+    <div class="tl-layout">
+      <div class="tl-top">
+        <div class="tl-eyebrow">เรื่องราวของเรา</div>
+        <div class="tl-title">จากวันนั้นถึงวันนี้ 💕</div>
+      </div>
+      <div class="tl-track">
+        <div class="tl-step">
+          <div class="tl-circle">👋</div>
+          <div class="tl-step-body">
+            <div class="tl-step-title">วันแรกที่เจอกัน</div>
+            <div class="tl-step-desc">หัวใจเต้นแรงตั้งแต่วินาทีแรก</div>
+          </div>
+        </div>
+        <div class="tl-step">
+          <div class="tl-circle">💬</div>
+          <div class="tl-step-body">
+            <div class="tl-step-title">เริ่มคุยกัน</div>
+            <div class="tl-step-desc">แชทกันทั้งวันทั้งคืน ไม่มีเบื่อ</div>
+          </div>
+        </div>
+        <div class="tl-step">
+          <div class="tl-circle">🦋</div>
+          <div class="tl-step-body">
+            <div class="tl-step-title">รู้ตัวว่าชอบ</div>
+            <div class="tl-step-desc">ผีเสื้อบินในท้องทุกครั้ง</div>
+          </div>
+        </div>
+        <div class="tl-step">
+          <div class="tl-circle">💌</div>
+          <div class="tl-step-body">
+            <div class="tl-step-title">วันนี้...</div>
+            <div class="tl-step-desc">ตัดสินใจบอกความรู้สึก 🌸</div>
+          </div>
+        </div>
+      </div>
+      <div class="tl-cta-row">
+        <button class="s-cta" onclick="goFinal()">บอกเธอเลย 💝</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* cursor */
+const cd=document.getElementById('cd'),cr=document.getElementById('cr');
+document.addEventListener('mousemove',e=>{
+  cd.style.left=e.clientX+'px';cd.style.top=e.clientY+'px';
+  setTimeout(()=>{cr.style.left=e.clientX+'px';cr.style.top=e.clientY+'px'},55);
+});
+
+/* veil */
+window.addEventListener('load',()=>setTimeout(()=>document.getElementById('veil').classList.add('gone'),850));
+
+/* canvas bg */
+const cv=document.getElementById('bgc'),cx=cv.getContext('2d');
+function rsz(){cv.width=innerWidth;cv.height=innerHeight}rsz();window.addEventListener('resize',rsz);
+const orbs=[
+  {x:.1,y:.15,r:.5,c:'rgba(255,180,230,.36)',a:0,s:.0006},
+  {x:.88,y:.75,r:.48,c:'rgba(200,120,255,.22)',a:2,s:.0009},
+  {x:.5,y:.5,r:.55,c:'rgba(255,235,248,.72)',a:4,s:.0005},
+  {x:.28,y:.85,r:.36,c:'rgba(255,155,220,.16)',a:1,s:.0008},
+  {x:.78,y:.18,r:.4,c:'rgba(210,130,255,.14)',a:3.2,s:.0007},
+];
+function drawBg(){
+  cx.clearRect(0,0,cv.width,cv.height);
+  const bg=cx.createLinearGradient(0,0,cv.width,cv.height);
+  bg.addColorStop(0,'#fff2fa');bg.addColorStop(.35,'#fde8f4');
+  bg.addColorStop(.65,'#f8e0fb');bg.addColorStop(1,'#fff0f8');
+  cx.fillStyle=bg;cx.fillRect(0,0,cv.width,cv.height);
+  orbs.forEach(o=>{
+    o.a+=o.s;
+    const ox=(o.x+Math.sin(o.a)*.07)*cv.width;
+    const oy=(o.y+Math.cos(o.a*.65)*.09)*cv.height;
+    const r=o.r*Math.max(cv.width,cv.height);
+    const g=cx.createRadialGradient(ox,oy,0,ox,oy,r);
+    g.addColorStop(0,o.c);g.addColorStop(1,'transparent');
+    cx.fillStyle=g;cx.beginPath();cx.arc(ox,oy,r,0,Math.PI*2);cx.fill();
+  });
+  requestAnimationFrame(drawBg);
+}
+drawBg();
+
+/* heart rain */
+const rEl=document.getElementById('rain');
+const pks=['#f9a8d4','#f472b6','#ec4899','#fda4af','#f0abfc','#fbcfe8'];
+function mkH(sz,col){
+  const s=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  s.setAttribute('width',sz);s.setAttribute('height',sz);s.setAttribute('viewBox','0 0 24 24');s.setAttribute('fill',col);
+  const p=document.createElementNS('http://www.w3.org/2000/svg','path');
+  p.setAttribute('d','M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z');
+  s.appendChild(p);return s;
+}
+function spawnH(){
+  const h=document.createElement('div');h.className='rh';
+  const sz=9+Math.random()*14;h.appendChild(mkH(sz,pks[Math.floor(Math.random()*pks.length)]));
+  h.style.left=Math.random()*100+'%';
+  h.style.setProperty('--o',.12+Math.random()*.35);
+  h.style.setProperty('--s',.5+Math.random()*.85);
+  h.style.setProperty('--r',(160+Math.random()*380)+'deg');
+  const d=5+Math.random()*9;h.style.animationDuration=d+'s';
+  h.style.animationDelay=Math.random()*.5+'s';
+  rEl.appendChild(h);setTimeout(()=>h.remove(),(d+2)*1000);
+}
+setInterval(spawnH,350);for(let i=0;i<16;i++)setTimeout(spawnH,i*70);
+
+/* stars */
+const stEl=document.getElementById('stars'),sc=['✦','✧','⋆','·','✼'];
+for(let i=0;i<50;i++){
+  const s=document.createElement('div');s.className='ss';
+  s.textContent=sc[Math.floor(Math.random()*sc.length)];
+  s.style.left=Math.random()*100+'%';s.style.top=Math.random()*100+'%';
+  s.style.fontSize=(4+Math.random()*6)+'px';
+  s.style.color=`rgba(200,50,170,${.04+Math.random()*.12})`;
+  s.style.setProperty('--d',(2+Math.random()*5)+'s');
+  s.style.setProperty('--dl',(Math.random()*5)+'s');
+  stEl.appendChild(s);
+}
+
+/* slide nav */
+const TOTAL=3;let cur=0,busy=false;
+const dotsEl=document.getElementById('dots');
+for(let i=0;i<TOTAL;i++){
+  const d=document.createElement('button');d.className='ndot'+(i===0?' on':'');
+  d.onclick=()=>goTo(i);dotsEl.appendChild(d);
+}
+function goTo(idx){
+  if(idx===cur||busy||idx<0||idx>=TOTAL)return;
+  busy=true;
+  const dir=idx>cur?'up':'down';
+  const old=document.getElementById('s'+cur);
+  const nxt=document.getElementById('s'+idx);
+  old.classList.add('exit-'+dir);
+  setTimeout(()=>old.classList.remove('active','exit-'+dir),500);
+  nxt.style.cssText='opacity:0;pointer-events:none;transform:translateY('+(dir==='up'?'28px':'-28px')+')';
+  setTimeout(()=>{
+    nxt.style.transition='none';nxt.offsetHeight;
+    nxt.style.transition='';nxt.classList.add('active');
+    nxt.style.cssText='';
+  },60);
+  cur=idx;
+  const pad=n=>String(n).padStart(2,'0');
+  document.getElementById('pgn').textContent=pad(cur+1)+' / '+pad(TOTAL);
+  document.querySelectorAll('.ndot').forEach((d,i)=>d.classList.toggle('on',i===cur));
+  document.getElementById('arrL').classList.toggle('hide',cur===0);
+  document.getElementById('arrR').classList.toggle('hide',cur===TOTAL-1);
+  setTimeout(()=>busy=false,620);
+}
+function go(d){goTo(cur+d)}
+function goFinal(){
+  document.body.style.transition='opacity .5s';
+  document.body.style.opacity='0';
+  setTimeout(()=>window.location.href='be-my-girlfriend.html',520);
+}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' ')go(1);
+  if(e.key==='ArrowLeft')go(-1);
+});
+let tx=0;
+document.addEventListener('touchstart',e=>{tx=e.changedTouches[0].screenX},{passive:true});
+document.addEventListener('touchend',e=>{
+  const d=tx-e.changedTouches[0].screenX;
+  if(Math.abs(d)>50){d>0?go(1):go(-1)}
+},{passive:true});
+</script>
+</body>
+</html>
